@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Click the Circle Game</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      background-color: #f0f0f0;
+      height: 100vh;
+    }
+
+    h1 {
+      margin: 20px;
+    }
+
+    #game-info {
+      display: flex;
+      justify-content: space-between;
+      width: 300px;
+      margin-bottom: 20px;
+    }
+
+    #game-area {
+      width: 800px;
+      height: 500px;
+      border: 2px solid #333;
+      position: relative;
+      background-color: white;
+    }
+
+    .circle {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: red;
+      position: absolute;
+      cursor: pointer;
+    }
+
+    #start-btn {
+      padding: 10px 20px;
+      margin-top: 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎯 Click the Circle Game</h1>
+  <div id="game-info">
+    <div>⏱️ Time: <span id="time">30</span>s</div>
+    <div>🎯 Score: <span id="score">0</span></div>
+  </div>
+
+  <div id="game-area"></div>
+
+  <button id="start-btn">Start Game</button>
+
+  <script>
+    const gameArea = document.getElementById('game-area');
+    const startBtn = document.getElementById('start-btn');
+    const timeDisplay = document.getElementById('time');
+    const scoreDisplay = document.getElementById('score');
+
+    let time = 30;
+    let score = 0;
+    let timerInterval;
+    let gameInProgress = false;
+
+    function getRandomPosition() {
+      const x = Math.floor(Math.random() * (gameArea.clientWidth - 50));
+      const y = Math.floor(Math.random() * (gameArea.clientHeight - 50));
+      return { x, y };
+    }
+
+    function createCircle() {
+      const circle = document.createElement('div');
+      circle.classList.add('circle');
+      const pos = getRandomPosition();
+      circle.style.left = `${pos.x}px`;
+      circle.style.top = `${pos.y}px`;
+
+      circle.addEventListener('click', () => {
+        score++;
+        scoreDisplay.textContent = score;
+        circle.remove();
+        if (gameInProgress) {
+          createCircle();
+        }
+      });
+
+      gameArea.appendChild(circle);
+    }
+
+    function startGame() {
+      if (gameInProgress) return;
+
+      gameInProgress = true;
+      time = 30;
+      score = 0;
+      timeDisplay.textContent = time;
+      scoreDisplay.textContent = score;
+      gameArea.innerHTML = '';
+
+      createCircle();
+
+      timerInterval = setInterval(() => {
+        time--;
+        timeDisplay.textContent = time;
+
+        if (time <= 0) {
+          clearInterval(timerInterval);
+          endGame();
+        }
+      }, 1000);
+    }
+
+    function endGame() {
+      gameInProgress = false;
+      gameArea.innerHTML = '';
+      alert(`Game Over! Your Score: ${score}`);
+    }
+
+    startBtn.addEventListener('click', startGame);
+  </script>
+
+</body>
+</html>
